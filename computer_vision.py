@@ -43,7 +43,8 @@ def get_measurements(file = 'annoying_bird.mov', speed = 1, h_range = 15, play=T
         h_range : sensitivity in HSV H-value for tracking red color
         play : if True, plays video on screen
     Return:
-        z : 2xN NumPy array of z_x, z_y for each frame
+        z : 2xN NumPy array of z_x, z_y for each frame.
+            Values of -1 indicate no measurements (bird out of frame)
     """
 
     cap = cv2.VideoCapture(file)
@@ -85,8 +86,6 @@ def get_measurements(file = 'annoying_bird.mov', speed = 1, h_range = 15, play=T
             # if no red on screen, set mesurement -1 (invalid pos)
             z_x.append(-1)
             z_y.append(-1)
-
-
 
         if play is True:
             cv2.imshow("Frame", frame)
@@ -143,6 +142,6 @@ def get_and_play(file = 'annoying_bird.mov', speed = 1):
 
 #get_and_play('annoying_bird.mov', 0.5)
 
-#z = get_measurements('annoying_bird.mov', 1, 5, False)
+z = get_measurements('annoying_bird.mov', 1, 5, False)
 #print(z)
-#print(z.shape)
+print(z.shape)
