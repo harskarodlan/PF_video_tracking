@@ -34,7 +34,7 @@ def color_mask(frame, h_range):
     return mask
 
 
-def get_measurements(file = 'annoying_bird.mov', speed = 1, h_range = 15, play=True):
+def get_measurements_old(file = 'annoying_bird.mov', speed = 1, h_range = 2, play=True):
     """
     Get measurments z_x, z_y of position of bird.
     Params:
@@ -71,6 +71,7 @@ def get_measurements(file = 'annoying_bird.mov', speed = 1, h_range = 15, play=T
         # mask for red colours
         mask = color_mask(frame_blurred, h_range)
 
+
         # get bounding box for red objects
         mask_pil = Image.fromarray(mask)
         bbox = mask_pil.getbbox()
@@ -82,12 +83,16 @@ def get_measurements(file = 'annoying_bird.mov', speed = 1, h_range = 15, play=T
             # position measurements are center of box
             z_x.append((x1+x2)/2)
             z_y.append((y1+y2)/2)
+
+            cv2.circle(frame, (int((x1+x2)/2), int((y1+y2)/2)), radius=8, color=(0, 255, 0), thickness=-1)
+
         else:
             # if no red on screen, set mesurement -1 (invalid pos)
             z_x.append(-1)
             z_y.append(-1)
 
         if play is True:
+            #cv2.imshow("Frame", frame)
             cv2.imshow("Frame", frame)
 
             # wait t ms or until esc is pressed
@@ -103,6 +108,114 @@ def get_measurements(file = 'annoying_bird.mov', speed = 1, h_range = 15, play=T
     cv2.destroyAllWindows()
 
     return z
+
+
+
+def get_measurements(file = 'annoying_bird.mov', speed = 1, h_range = 2, play=True):
+    """
+    Get measurments z_x, z_y of position of bird.
+    Params:
+        file : video file
+        speed : playback speed
+        h_range : sensitivity in HSV H-value for tracking red color
+        play : if True, plays video on screen
+    Return:
+        z : 2xN NumPy array of z_x, z_y for each frame.
+            Values of -1 indicate no measurements (bird out of frame)
+    """
+    cap = cv2.VideoCapture(file)
+    
+    # 1x frame rate = 60
+    fps = 60*speed
+    # time between frames
+    t = int(1000/fps)
+
+    # x, y position measurements
+    z_x = []
+    z_y = []
+
+    while True:
+        # ret: Bool, True if frame successfully opened
+        # frame: NumPy array of image frame
+        ret, frame = cap.read()
+        if not ret: # if eg. end of video
+            break
+
+        # blur for noise reduction
+        frame_blurred = cv2.GaussianBlur(frame, (15, 15), 0)  
+        
+        # mask for red colours
+        mask = color_mask(frame_blurred, h_range)
+
+        if mask.any():
+            
+            # We want to remove small contours (not the big red blob that is the birds hair)
+
+            # Get connected components
+            _, im_with_separated_blobs, stats, _ = cv2.connectedComponentsWithStats(mask)
+
+            sizes = stats[:, cv2.CC_STAT_AREA] # get areas of components in order of size
+
+            min_size = sizes[1]  # bg gives sizes[0], hair given as second larges blob i.e. sizes[1]
+
+            # filter away small components
+            mask = np.where(sizes[im_with_separated_blobs] >= min_size, mask, 0)
+
+            # Find indices where we have mass
+            mass_y, mass_x = np.where(mask >= 255)
+            # mass_x and mass_y are the list of x indices and y indices of mass pixels
+
+            # find center of mass
+            cent_x = int(np.average(mass_x))
+            cent_y = int(np.average(mass_y))
+
+            # plot center
+            cv2.circle(frame, (cent_x, cent_y), radius=8, color=(0, 255, 0), thickness=-1)
+
+            # position is center of mass
+            z_x.append(cent_x)
+            z_y.append(cent_y)
+
+        else:
+            # if no red on screen, set measurement -1 (invalid pos)
+            z_x.append(-1)
+            z_y.append(-1)
+
+
+        if play is True:
+            cv2.imshow("Frame", frame)
+            #cv2.imshow("Frame", mask)
+
+            # wait t ms or until esc is pressed
+            key = cv2.waitKey(t)
+            if key == 27: # esc = 27
+                break
+    
+    z_x = np.array(z_x)
+    z_y = np.array(z_y)
+    z = np.vstack((z_x, z_y))
+
+    cap.release()
+    cv2.destroyAllWindows()
+
+    return z
+
+
+def ground_truth(file = 'annoying_bird.mov', speed = 1, h_range = 2, play=True):
+    """
+    Get ground truth position x, y of bird.
+    Params:
+        file : video file
+        speed : playback speed
+        play : if True, plays video on screen
+    Return:
+        pos : 2xN NumPy array of x, y for each frame.
+            Values of -1 indicate no position (bird out of frame)
+    """
+
+    pos = get_measurements(file, speed, 2, play)
+
+    return pos
 
 
 def get_and_play(file = 'annoying_bird.mov', speed = 1):
@@ -139,9 +252,12 @@ def get_and_play(file = 'annoying_bird.mov', speed = 1):
     cv2.destroyAllWindows()
 
 
-
 #get_and_play('annoying_bird.mov', 0.5)
 
-#z = get_measurements('annoying_bird.mov', 1, 5, True)
+#z = get_measurements_old('annoying_bird.mov', 1, 2, True)
 #print(z)
 #print(z.shape)
+z = get_measurements('annoying_bird.mov', 1, 30, True)
+
+
+#ground_truth('annoying_bird.mov', 1, True)
