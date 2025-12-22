@@ -142,6 +142,6 @@ def get_and_play(file = 'annoying_bird.mov', speed = 1):
 
 #get_and_play('annoying_bird.mov', 0.5)
 
-z = get_measurements('annoying_bird.mov', 1, 5, False)
+#z = get_measurements('annoying_bird.mov', 1, 5, True)
 #print(z)
-print(z.shape)
+#print(z.shape)

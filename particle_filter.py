@@ -208,6 +208,35 @@ def injection_resample(state_bar:np.ndarray, weights:np.ndarray, injection_ratio
     return state
 
 
+def resample(
+        state:np.ndarray,
+        M:int,
+        z_t:np.ndarray,
+        std_p:float,
+        std_v:float,
+        std_q:float,
+        threshold:float,
+        injection_ratio:float,
+        speed:float
+):
+    
+    no_measurement = -1 * np.ones((2,1))
+
+    state_bar = predict(state,std_p,std_v,speed)
+    z_t = np.resize(z_t,(2,1)) # numpy returns a (2) we need a (2,1)
+
+    # We have a measurement, the filter is in normal mode and all particles are resampled
+    if np.array_equal(z_t,no_measurement):
+        weights = np.ones(M) / M
+        state = injection_resample(state_bar, weights, injection_ratio, std_v)
+    # We have no measurement, the filter is in recover mode and some particles are injected
+    else:
+        weights = weight_particles(state_bar, z_t, std_q, threshold)
+        state = systematic_resample(state_bar, weights)
+
+    state = wrap_state(state)
+
+    return state
 
 
 
@@ -238,25 +267,12 @@ def particle_filter(
     """
     state = random_particles(M,std_v)
     T = z.shape[1] # number of measurements
-    no_measurement = -1 * np.ones((2,1))
 
     simulation = np.zeros((4,M,T))
 
     for t in range(T):
-        state_bar = predict(state,std_p,std_v,speed)
-        z_t = np.resize(z[:,t],(2,1)) # numpy returns a (2) we need a (2,1)
-
-        # We have a measurement, the filter is in normal mode and all particles are resampled
-        if np.array_equal(z_t,no_measurement):
-            weights = np.ones(M) / M
-            state = injection_resample(state_bar, weights, injection_ratio, std_v)
-        # We have no measurement, the filter is in recover mode and some particles are injected
-        else:
-            weights = weight_particles(state_bar, z_t, std_q, threshold)
-            state = systematic_resample(state_bar, weights)
-
-        state = wrap_state(state)
-
+        z_t = np.resize(z_t,(2,1)) # numpy returns a (2) we need a (2,1)  
+        state = resample(state, M, z_t, std_p, std_v, std_q, threshold. injection_ratio, speed)
         simulation[:,:,t] = state
 
     return simulation
