@@ -1,6 +1,9 @@
 import cv2
 import numpy as np
 from PIL import Image
+
+import matplotlib
+matplotlib.use('TKAgg')
 import matplotlib.pyplot as plt
 from numpy.ma.extras import apply_along_axis
 
@@ -104,6 +107,7 @@ def visualize_sim(
         if not ret:  # if eg. end of video
             break
 
+
         particles = state[:2, :]
         z_k = current_measurement_robust(frame, h_range)
         true_pos = current_ground_truth(frame)
@@ -122,6 +126,18 @@ def visualize_sim(
                 cv2.circle(frame, (int(true_pos[0,0]), int(true_pos[1,0])), radius=8, color=(255, 0, 0), thickness=-1)
             # draw predicted position in magenta
             cv2.circle(frame, (int(pose_predicted[0, 0]), int(pose_predicted[1, 0])), radius=8, color=(255, 0, 255), thickness=-1)
+
+            font = cv2.FONT_HERSHEY_SIMPLEX
+            # Use putText() method for
+            # inserting text on video
+            frame_count = str(k)
+            cv2.putText(frame, 
+                        frame_count, 
+                        (50, 50), 
+                        font, 1, 
+                        (0, 255, 255), 
+                        2, 
+                        cv2.LINE_4)
 
             for i in range(M):
                 x, y = np.int16(particles[:, i])
