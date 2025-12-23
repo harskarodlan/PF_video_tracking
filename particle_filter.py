@@ -80,7 +80,7 @@ def predict_with_speed(state:np.ndarray, std_p:float, std_v:float, speed:float) 
 
 def predict(state:np.ndarray, std_p:float, std_v:float) -> np.ndarray:
     """
-    Predicts the new position of the bird for the next frame.
+    Predicts the new position of the bird for the next frame basing on motion model.
     Params:
         state : NumPy array (4,M), the particles, rows are respectively x, y, v_x, v_y
         std_p : float, standard deviation for x and y
@@ -243,8 +243,9 @@ def next_frame(
         std_p:float,
         std_v:float,
         std_q:float,
-        threshold:float,
-        injection_ratio:float,
+        threshold:float = 0.,
+        injection_ratio:float = 0.,
+        force_injection: bool = False
 ):
     """
     Uses motion model, weighting and resampling to predict the bird's position for the next frame.
@@ -258,6 +259,7 @@ def next_frame(
         threshold: float, the threshold to detect outlier measurements
         injection_ratio : float in [0,1], the fraction of particles to generate when the filter is in
         recover mode
+        force_injection: boolean, if True extra particles are injected also in case of valid measurement
     Return:
         state_next : NumPy array (4,M), the particles predicted for next frame
     """
@@ -272,7 +274,10 @@ def next_frame(
     # We have no measurement, the filter is in recover mode and some particles are injected
     else:
         weights = weight_particles(state_bar, z_t, std_q, threshold)
-        state_next = systematic_resample(state_bar, weights)
+        if force_injection:
+            state_next = injection_resample(state_bar, weights, injection_ratio, std_v)
+        else:
+            state_next = systematic_resample(state_bar, weights)
 
     state_next = wrap_state(state_next)
 
@@ -288,7 +293,6 @@ def particle_filter(
         std_q:float,
         threshold:float,
         injection_ratio:float,
-        speed:float
 ) -> np.ndarray:
     """
     The entire Particle Filter that tracks the bird.
@@ -312,7 +316,7 @@ def particle_filter(
 
     for t in range(T):
         z_t = np.resize(z[:, t], (2, 1))  # numpy returns a (2) we need a (2,1)
-        state = next_frame(state, M, z_t, std_p, std_v, std_q, threshold, injection_ratio)
+        state = next_frame(state, M, z_t, std_p, std_v, std_q, threshold, injection_ratio, False)
         simulation[:,:,t] = state
 
     return simulation

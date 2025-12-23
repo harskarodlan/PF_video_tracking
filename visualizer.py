@@ -17,6 +17,7 @@ def plot_errors(errors: np.ndarray, title:str) -> None:
     Plots the errors
     Params:
         errors : NumPy array (T), the error for each frame
+        title: string, the title of the plot
     Return:
         None
     """
@@ -38,9 +39,11 @@ def plot_errors(errors: np.ndarray, title:str) -> None:
 
 def clean_errors(errors: np.ndarray, stride: int) -> np.ndarray:
     """
-    Plots the errors
+    Removes errors right after an invalid measurement section, to take into
+    account only the regions where the filter converged already.
     Params:
         errors : NumPy array (T), the error for each frame
+        stride: int, how many frames to neglect after the invalid measurement section
     Return:
         errors_pruned : NumPy array (T), the errors pruned
     """
@@ -65,7 +68,8 @@ def visualize_sim(
         std_q: float,
         threshold: float,
         injection_ratio: float,
-        speed: float,
+        injection_distance: int,
+        speed: float = 1.,
         file: str = 'annoying_bird.mov',
         h_range: int = 15,
         play:bool = True
@@ -80,6 +84,8 @@ def visualize_sim(
         threshold: float, the threshold to detect outlier measurements
         injection_ratio : float in [0,1], the fraction of particles to generate when the filter is in
         recover mode
+        injection_distance: int, if two consecutive measurements are farther than this value,
+        we still inject some particles even if the measurement is valid
         speed : float, playback speed
         file : string, video file name
         h_range : int, sensitivity in HSV H-value for tracking red color
@@ -99,6 +105,7 @@ def visualize_sim(
 
     k = 0
     errors = np.zeros(1000)
+    z_prev = np.zeros((2, 1))
 
     while True:
         # ret: Bool, True if frame successfully opened
@@ -152,7 +159,13 @@ def visualize_sim(
             if key == 27:  # esc = 27
                 break
 
-        state = next_frame(state, M, z_k, std_p, std_v, std_q, threshold, injection_ratio)
+        measurement_distance = int(np.linalg.norm(z_prev - z_k))
+        z_prev = z_k
+
+        if measurement_distance >= injection_distance:
+            state = next_frame(state, M, z_k, std_p, std_v, std_q, threshold, injection_ratio, True)
+        else:
+            state = next_frame(state, M, z_k, std_p, std_v, std_q, threshold, injection_ratio, False)
         k = k + 1
 
     errors = errors[:k]
@@ -173,7 +186,7 @@ def visualize_sim_z_given(
         threshold:float,
         injection_ratio:float,
         speed:float,
-        file = 'annoying_bird.mov'
+        file:str = 'annoying_bird.mov'
 ) -> None:
     """
     On screen video playback and visualizer of Particle Filter that tracks the bird,
@@ -226,38 +239,8 @@ def visualize_sim_z_given(
             break
 
         z_k = np.resize(z[:, k], (2, 1))  # numpy returns a (2) we need a (2,1)
-        state = next_frame(state, M, z_k, std_p, std_v, std_q, threshold, injection_ratio)
+        state = next_frame(state, M, z_k, std_p, std_v, std_q, threshold, injection_ratio, False)
         k = k+1
 
     cap.release()
     cv2.destroyAllWindows()
-
-
-
-# z = get_measurements('annoying_bird.mov', 1, 15, False)
-# visualize_sim_z_given(100,z,0.001,0.01,5.,0.002,0.4,1.)
-# visualize_sim_z_given(100,z,5.,0.1,20.,0.0,0.0,1.)
-
-errors = visualize_sim(
-    M = 500,
-    std_p = 10.,
-    std_v = 10.,
-    std_q = 20.,
-    threshold = 0,
-    injection_ratio = 0.01,
-    speed = 0.5,
-    file = 'annoying_bird.mov',
-    h_range = 40,
-    play = True
-)
-
-plot_errors(errors, "Error for Each Frame")
-
-errors_1 = clean_errors(errors, 1)
-plot_errors(errors_1, "Error After Pruning 1")
-errors_2 = clean_errors(errors, 5)
-plot_errors(errors_2, "Error After Pruning 2")
-errors_3 = clean_errors(errors, 10)
-plot_errors(errors_3, "Error After Pruning 3")
-
-plt.show()

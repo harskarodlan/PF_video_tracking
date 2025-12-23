@@ -38,12 +38,12 @@ def color_mask(frame, h_range):
 
 def current_measurement(frame, h_range = 15) -> np.ndarray:
     """
-    Get measurements z_x, z_y of position of bird for a given frame.
+    Get measurements z_x, z_y of bird's position for a given frame.
     Params:
         frame : the frame
         h_range : int, sensitivity in HSV H-value for tracking red color
     Return:
-        z : NumPy array (2,1), of z_x, z_y for each frame.
+        z : NumPy array (2,1), of z_x, z_y the frame.
             Values of -1 indicate no measurements (bird out of frame)
     """
     z = np.zeros((2,1))
@@ -73,9 +73,9 @@ def current_measurement(frame, h_range = 15) -> np.ndarray:
 
 
 
-def get_measurements(file = 'annoying_bird.mov', speed = 1, h_range = 15, play=True) -> np.ndarray:
+def get_measurements(file = 'annoying_bird.mov', speed = 1., h_range = 15, play=True) -> np.ndarray:
     """
-    Get measurements z_x, z_y of position of bird.
+    Get measurements z_x, z_y of bird's position.
     Params:
         file : string, video file name
         speed : float, playback speed
@@ -121,7 +121,7 @@ def get_measurements(file = 'annoying_bird.mov', speed = 1, h_range = 15, play=T
             z_x.append((x1+x2)/2)
             z_y.append((y1+y2)/2)
         else:
-            # if no red on screen, set mesurement -1 (invalid pos)
+            # if no red on screen, set measurement -1 (invalid pos)
             z_x.append(-1)
             z_y.append(-1)
 
@@ -179,15 +179,15 @@ def get_and_play(file = 'annoying_bird.mov', speed = 1):
 
 
 
-def current_measurement_robust(frame, h_range):
+def current_measurement_robust(frame, h_range) -> np.ndarray:
     """
-    Get measurements z_x, z_y of position of bird for a given frame.
+    Get measurements z_x, z_y of bird's position for a given frame.
     Filters small components for robustness.
     Params:
         frame : the frame
         h_range : int, sensitivity in HSV H-value for tracking red color
     Return:
-        z : NumPy array (2,1), of z_x, z_y for each frame.
+        z : NumPy array (2,1), of z_x, z_y for this frame.
             Values of -1 indicate no measurements (bird out of frame)
     """
     z = np.zeros((2,1))
@@ -216,7 +216,7 @@ def current_measurement_robust(frame, h_range):
         mass_y, mass_x = np.where(mask >= 255)
         # mass_x and mass_y are the list of x indices and y indices of mass pixels
 
-        # find center of massz_curr
+        # find center of mass_curr
         cent_x = int(np.average(mass_x))
         cent_y = int(np.average(mass_y))
 
@@ -236,15 +236,15 @@ def current_measurement_robust(frame, h_range):
 
 
 
-def get_measurements_robust(file = 'annoying_bird.mov', speed = 1, h_range = 2, play=True):
+def get_measurements_robust(file = 'annoying_bird.mov', speed = 1., h_range = 2, play=True):
     """
-    Get measurments z_x, z_y of position of bird.
+    Get measurements z_x, z_y of bird's position.
     Filters small components for robustness.
     Params:
         file : video file
-        speed : playback speed
-        h_range : sensitivity in HSV H-value for tracking red color
-        play : if True, plays video on screen
+        speed : float, playback speed
+        h_range : int, sensitivity in HSV H-value for tracking red color
+        play : boolean, if True, plays video on screen
     Return:
         z : 2xN NumPy array of z_x, z_y for each frame.
             Values of -1 indicate no measurements (bird out of frame)
@@ -291,25 +291,15 @@ def get_measurements_robust(file = 'annoying_bird.mov', speed = 1, h_range = 2, 
     return z
 
 
+
 def current_ground_truth(frame):
     """
     Get ground truth position x,y of bird for a given frame.
     Params:
         frame : the frame
     Return:
-        z : NumPy array (2,1), of x, y for each frame.
+        z : NumPy array (2,1), of x, y for this frame.
             Values of -1 indicate no position (bird out of frame)
     """
     pos = current_measurement_robust(frame, 2)
     return pos
-
-
-
-
-#get_and_play('annoying_bird.mov', 0.5)
-
-#z = get_measurements('annoying_bird.mov', 1, 5, True)
-#print(z)
-#print(z.shape)
-
-#z = get_measurements_robust('annoying_bird.mov', 1, 2, True)
