@@ -4,7 +4,7 @@ from PIL import Image
 
 from particle_filter import next_frame, random_particles
 
-from computer_vision import get_measurements, current_measurement
+from computer_vision import get_measurements, current_measurement, current_measurement_robust
 
 
 
@@ -57,17 +57,23 @@ def visualize_sim(
             break
 
         particles = state[:2, :]
-        z_k = current_measurement(frame, h_range)
+        z_k = current_measurement_robust(frame, h_range)
+
+        true_pos = current_measurement_robust(frame, 2)
 
         pose_predicted = np.mean(particles,1)
         pose_predicted = np.resize(pose_predicted, (2, 1))
 
         if not np.array_equal(z_k, no_measurement):
-            cum_err += np.linalg.norm(z_k - pose_predicted)
+            cum_err += np.linalg.norm(true_pos - pose_predicted)
 
         if play:
             if not np.array_equal(z_k, no_measurement):
+                # draw mesurement in green
                 cv2.circle(frame, (int(z_k[0, 0]), int(z_k[1, 0])), radius=8, color=(0, 255, 0), thickness=-1)
+                # draw true position in blue
+                cv2.circle(frame, (int(true_pos[0,0]), int(true_pos[1,0])), radius=8, color=(255, 0, 0), thickness=-1)
+            # draw predicted position in magenta
             cv2.circle(frame, (int(pose_predicted[0, 0]), int(pose_predicted[1, 0])), radius=8, color=(255, 0, 255), thickness=-1)
 
             for i in range(M):
@@ -176,7 +182,7 @@ error = visualize_sim(
     injection_ratio = 0.01,
     speed = 0.5,
     file = 'annoying_bird.mov',
-    h_range = 15,
+    h_range = 40,
     play = True
 )
 

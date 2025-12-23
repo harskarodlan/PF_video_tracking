@@ -216,7 +216,7 @@ def current_measurement_robust(frame, h_range):
         mass_y, mass_x = np.where(mask >= 255)
         # mass_x and mass_y are the list of x indices and y indices of mass pixels
 
-        # find center of mass
+        # find center of massz_curr
         cent_x = int(np.average(mass_x))
         cent_y = int(np.average(mass_y))
 
@@ -239,6 +239,7 @@ def current_measurement_robust(frame, h_range):
 def get_measurements_robust(file = 'annoying_bird.mov', speed = 1, h_range = 2, play=True):
     """
     Get measurments z_x, z_y of position of bird.
+    Filters small components for robustness.
     Params:
         file : video file
         speed : playback speed
@@ -289,10 +290,12 @@ def get_measurements_robust(file = 'annoying_bird.mov', speed = 1, h_range = 2, 
 
     return z
 
+
+
 #get_and_play('annoying_bird.mov', 0.5)
 
 #z = get_measurements('annoying_bird.mov', 1, 5, True)
 #print(z)
 #print(z.shape)
 
-z = get_measurements_robust('annoying_bird.mov', 1, 2, True)
+#z = get_measurements_robust('annoying_bird.mov', 1, 2, True)
