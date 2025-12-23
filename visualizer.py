@@ -1,10 +1,57 @@
 import cv2
 import numpy as np
 from PIL import Image
+import matplotlib.pyplot as plt
+from numpy.ma.extras import apply_along_axis
 
 from particle_filter import next_frame, random_particles
-
 from computer_vision import get_measurements, current_measurement, current_measurement_robust, current_ground_truth
+
+
+
+def plot_errors(errors: np.ndarray, title:str) -> None:
+    """
+    Plots the errors
+    Params:
+        errors : NumPy array (T), the error for each frame
+    Return:
+        None
+    """
+    plt.figure(num=title)
+    mae = int(np.mean(errors))
+
+    plt.plot(errors)
+    plt.grid()
+
+    plt.suptitle(title, fontweight="bold")
+    plt.title("MAE: " + str(mae) + " pixels")
+    plt.xlabel("Frame Number")
+    plt.ylabel("Frame Error")
+
+    # plt.show() # We call just one plt.show() at the end
+    return
+
+
+
+def clean_errors(errors: np.ndarray, stride: int) -> np.ndarray:
+    """
+    Plots the errors
+    Params:
+        errors : NumPy array (T), the error for each frame
+    Return:
+        errors_pruned : NumPy array (T), the errors pruned
+    """
+    errors_pruned = np.zeros(errors.size)
+
+    for i in range(errors.size - stride):
+        if errors[i] == 0.:
+            errors_pruned[i + stride] = 0.
+        else:
+            errors_pruned[i + stride] = errors[i + stride]
+    for i in range(stride):
+        errors_pruned[-stride] = errors[-stride]
+
+    return errors_pruned
 
 
 
@@ -19,7 +66,7 @@ def visualize_sim(
         file: str = 'annoying_bird.mov',
         h_range: int = 15,
         play:bool = True
-) -> float:
+) -> (float, np.ndarray):
     """
     On screen video playback and visualizer of Particle Filter that tracks the bird.
     Params:
@@ -35,7 +82,7 @@ def visualize_sim(
         h_range : int, sensitivity in HSV H-value for tracking red color
         play : boolean, if True, plays video on screen
     Return:
-        mae: float, the Mean Absolute Error of the simulation
+        errors: NumPy array (T), the error for each frame
     """
     no_measurement = -1 * np.ones((2, 1))
     cap = cv2.VideoCapture(file)
@@ -48,7 +95,8 @@ def visualize_sim(
     state = random_particles(M, std_v)
 
     k = 0
-    cum_err = 0
+    errors = np.zeros(1000)
+
     while True:
         # ret: Bool, True if frame successfully opened
         # frame: NumPy array of image frame
@@ -58,18 +106,17 @@ def visualize_sim(
 
         particles = state[:2, :]
         z_k = current_measurement_robust(frame, h_range)
-
         true_pos = current_ground_truth(frame)
 
         pose_predicted = np.mean(particles,1)
         pose_predicted = np.resize(pose_predicted, (2, 1))
 
         if not np.array_equal(z_k, no_measurement):
-            cum_err += np.linalg.norm(true_pos - pose_predicted)
+            errors[k] = np.linalg.norm(true_pos - pose_predicted)
 
         if play:
             if not np.array_equal(z_k, no_measurement):
-                # draw mesurement in green
+                # draw measurement in green
                 cv2.circle(frame, (int(z_k[0, 0]), int(z_k[1, 0])), radius=8, color=(0, 255, 0), thickness=-1)
                 # draw true position in blue
                 cv2.circle(frame, (int(true_pos[0,0]), int(true_pos[1,0])), radius=8, color=(255, 0, 0), thickness=-1)
@@ -78,6 +125,7 @@ def visualize_sim(
 
             for i in range(M):
                 x, y = np.int16(particles[:, i])
+                # draw particles in red
                 cv2.circle(frame, (x, y), radius=3, color=(0, 0, 255), thickness=-1)
 
             # show frame in window "Frame"
@@ -91,11 +139,12 @@ def visualize_sim(
         state = next_frame(state, M, z_k, std_p, std_v, std_q, threshold, injection_ratio)
         k = k + 1
 
-    mae = cum_err / k
+    errors = errors[:k]
+
     cap.release()
     cv2.destroyAllWindows()
 
-    return mae
+    return errors
 
 
 
@@ -173,7 +222,7 @@ def visualize_sim_z_given(
 # visualize_sim_z_given(100,z,0.001,0.01,5.,0.002,0.4,1.)
 # visualize_sim_z_given(100,z,5.,0.1,20.,0.0,0.0,1.)
 
-error = visualize_sim(
+errors = visualize_sim(
     M = 500,
     std_p = 10.,
     std_v = 10.,
@@ -186,4 +235,13 @@ error = visualize_sim(
     play = True
 )
 
-print(error)
+plot_errors(errors, "Error for Each Frame")
+
+errors_1 = clean_errors(errors, 1)
+plot_errors(errors_1, "Error After Pruning 1")
+errors_2 = clean_errors(errors, 5)
+plot_errors(errors_2, "Error After Pruning 2")
+errors_3 = clean_errors(errors, 10)
+plot_errors(errors_3, "Error After Pruning 3")
+
+plt.show()
