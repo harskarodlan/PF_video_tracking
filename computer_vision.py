@@ -291,6 +291,20 @@ def get_measurements_robust(file = 'annoying_bird.mov', speed = 1, h_range = 2, 
     return z
 
 
+def current_ground_truth(frame):
+    """
+    Get ground truth position x,y of bird for a given frame.
+    Params:
+        frame : the frame
+    Return:
+        z : NumPy array (2,1), of x, y for each frame.
+            Values of -1 indicate no position (bird out of frame)
+    """
+    pos = current_measurement_robust(frame, 2)
+    return pos
+
+
+
 
 #get_and_play('annoying_bird.mov', 0.5)
 

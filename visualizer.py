@@ -4,7 +4,7 @@ from PIL import Image
 
 from particle_filter import next_frame, random_particles
 
-from computer_vision import get_measurements, current_measurement, current_measurement_robust
+from computer_vision import get_measurements, current_measurement, current_measurement_robust, current_ground_truth
 
 
 
@@ -59,7 +59,7 @@ def visualize_sim(
         particles = state[:2, :]
         z_k = current_measurement_robust(frame, h_range)
 
-        true_pos = current_measurement_robust(frame, 2)
+        true_pos = current_ground_truth(frame)
 
         pose_predicted = np.mean(particles,1)
         pose_predicted = np.resize(pose_predicted, (2, 1))
