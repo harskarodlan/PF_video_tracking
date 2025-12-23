@@ -18,6 +18,7 @@ def hsv_limits(h_range):
     return lower_red_0, upper_red_0, lower_red_1, upper_red_1
 
 
+
 def color_mask(frame, h_range):
     """
     Create mask for red color given sensitivity in H-value.
@@ -34,19 +35,56 @@ def color_mask(frame, h_range):
     return mask
 
 
-def get_measurements(file = 'annoying_bird.mov', speed = 1, h_range = 15, play=True):
+
+def current_measurement(frame, h_range = 15) -> np.ndarray:
     """
-    Get measurments z_x, z_y of position of bird.
+    Get measurements z_x, z_y of position of bird for a given frame.
     Params:
-        file : video file
-        speed : playback speed
-        h_range : sensitivity in HSV H-value for tracking red color
-        play : if True, plays video on screen
+        frame : the frame
+        h_range : int, sensitivity in HSV H-value for tracking red color
     Return:
-        z : 2xN NumPy array of z_x, z_y for each frame.
+        z : NumPy array (2,1), of z_x, z_y for each frame.
             Values of -1 indicate no measurements (bird out of frame)
     """
+    z = np.zeros((2,1))
 
+    # blur for noise reduction
+    frame_blurred = cv2.GaussianBlur(frame, (15, 15), 0)
+
+    # mask for red colours
+    mask = color_mask(frame_blurred, h_range)
+
+    # get bounding box for red objects
+    mask_pil = Image.fromarray(mask)
+    bbox = mask_pil.getbbox()
+
+    if bbox is not None:
+        x1, y1, x2, y2 = bbox
+
+        # position measurements are center of box
+        z[0,:] = ((x1 + x2) / 2)
+        z[1,:] = ((y1 + y2) / 2)
+    else:
+        # if no red on screen, set measurement to -1 (invalid pos)
+        z[0, :] = -1
+        z[1, :] = -1
+
+    return z
+
+
+
+def get_measurements(file = 'annoying_bird.mov', speed = 1, h_range = 15, play=True) -> np.ndarray:
+    """
+    Get measurements z_x, z_y of position of bird.
+    Params:
+        file : string, video file name
+        speed : float, playback speed
+        h_range : int, sensitivity in HSV H-value for tracking red color
+        play : boolean, if True, plays video on screen
+    Return:
+        z : NumPy array (2,T), of z_x, z_y for each frame.
+            Values of -1 indicate no measurements (bird out of frame)
+    """
     cap = cv2.VideoCapture(file)
     
     # 1x frame rate = 60
@@ -103,6 +141,7 @@ def get_measurements(file = 'annoying_bird.mov', speed = 1, h_range = 15, play=T
     cv2.destroyAllWindows()
 
     return z
+
 
 
 def get_and_play(file = 'annoying_bird.mov', speed = 1):
