@@ -13,7 +13,7 @@ errors = visualize_sim(
     injection_distance = 100,
     speed = 0.5,
     file = 'annoying_bird.mov',
-    h_range = 40,
+    std_e = 4,
     play = True
 )
 

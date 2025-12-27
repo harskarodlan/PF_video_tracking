@@ -71,7 +71,7 @@ def visualize_sim(
         injection_distance: int,
         speed: float = 1.,
         file: str = 'annoying_bird.mov',
-        h_range: int = 15,
+        std_e: int = 4,
         play:bool = True
 ) -> (float, np.ndarray):
     """
@@ -88,7 +88,7 @@ def visualize_sim(
         we still inject some particles even if the measurement is valid
         speed : float, playback speed
         file : string, video file name
-        h_range : int, sensitivity in HSV H-value for tracking red color
+        std_e : int, measurement error standard deviation
         play : boolean, if True, plays video on screen
     Return:
         errors: NumPy array (T), the error for each frame
@@ -116,7 +116,7 @@ def visualize_sim(
 
 
         particles = state[:2, :]
-        z_k = current_measurement_robust(frame, h_range)
+        z_k = current_measurement(frame, std_e)
         true_pos = current_ground_truth(frame)
 
         pose_predicted = np.mean(particles,1)

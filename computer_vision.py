@@ -36,7 +36,7 @@ def color_mask(frame, h_range):
 
 
 
-def current_measurement(frame, h_range = 15) -> np.ndarray:
+def current_measurement_old(frame, h_range = 15) -> np.ndarray:
     """
     Get measurements z_x, z_y of bird's position for a given frame.
     Params:
@@ -303,3 +303,26 @@ def current_ground_truth(frame):
     """
     pos = current_measurement_robust(frame, 2)
     return pos
+
+
+def current_measurement(frame, std):
+    """
+    Get simulated measurement position z_x,z_y of bird for a given frame.
+    Implemented as ground truth with added gaussian noise as error.
+    Params:
+        frame : the frame
+        std : standard deviation of measurment error
+    Return:
+        z : NumPy array (2,1), of measurement z_x, z_y for this frame.
+            Values of -1 indicate no position (bird out of frame)
+    """
+    true_pos = current_ground_truth(frame)
+
+    no_measurement = -1 * np.ones((2, 1))
+
+    z = true_pos
+
+    if not np.array_equal(true_pos, no_measurement):
+        z = z + np.random.normal(0,std,(2,1))
+    
+    return z
