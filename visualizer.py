@@ -37,6 +37,35 @@ def plot_errors(errors: np.ndarray, title:str) -> None:
 
 
 
+def plot_errors_interval(errors: np.ndarray, title:str, start:int, end:int) -> None:
+    """
+    Plots the errors in a given interval [start,end)
+    Params:
+        errors : NumPy array (T), the error for each frame
+        title: string, the title of the plot
+        start: int, starting frame, included
+        start: int, ending frame, excluded
+    Return:
+        None
+    """
+    errors_interval = errors[start:end]
+
+    plt.figure(num=title)
+    mae = int(np.mean(errors_interval))
+
+    plt.plot(range(start,end), errors_interval)
+    plt.grid()
+
+    plt.suptitle(title, fontweight="bold")
+    plt.title("MAE in [" + str(start) + "," + str(end) + "): " + str(mae) + " pixels")
+    plt.xlabel("Frame Number")
+    plt.ylabel("Frame Error")
+
+    # plt.show() # We call just one plt.show() at the end
+    return
+
+
+
 def clean_errors(errors: np.ndarray, stride: int) -> np.ndarray:
     """
     Removes errors right after an invalid measurement section, to take into
@@ -61,6 +90,26 @@ def clean_errors(errors: np.ndarray, stride: int) -> np.ndarray:
 
 
 
+def compute_errors(predicted:np.ndarray, ground:np.ndarray) -> np.ndarray:
+    """
+    Computes the error between two pose sequences, as the Euclidean distance between the pixel positions.
+    Params:
+        predicted : NumPy array (2, T), the predicted pose
+        ground : NumPy array (2, T), the ground truth
+    Return:
+        errors: NumPy array (T), the error
+    """
+    diff = predicted - ground
+    diff = np.square(diff)
+    diff = np.sum(diff, 0)
+    diff = np.sqrt(diff)
+
+    return diff
+
+
+
+
+
 def visualize_sim(
         M: int,
         std_p: float,
@@ -71,9 +120,9 @@ def visualize_sim(
         injection_distance: int,
         speed: float = 1.,
         file: str = 'annoying_bird.mov',
-        std_e: int = 4,
+        std_e: float = 4.,
         play:bool = True
-) -> (float, np.ndarray):
+) -> (np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray):
     """
     On screen video playback and visualizer of Particle Filter that tracks the bird.
     Params:
@@ -91,7 +140,11 @@ def visualize_sim(
         std_e : int, measurement error standard deviation
         play : boolean, if True, plays video on screen
     Return:
-        errors: NumPy array (T), the error for each frame
+        errors: NumPy array (T), the prediction error for each frame
+        errors_meas: NumPy array (T), the measurement error for each frame
+        poses_true: NumPy array (2,T), the ground truth poses for each frame
+        measures: NumPy array (2,T), the measures for each frame
+        poses_pf: NumPy array (2,T), the predicted poses for each frame
     """
     no_measurement = -1 * np.ones((2, 1))
     cap = cv2.VideoCapture(file)
@@ -105,6 +158,10 @@ def visualize_sim(
 
     k = 0
     errors = np.zeros(1000)
+    errors_meas = np.zeros(1000)
+    poses_true = np.zeros((2,1000))
+    measures = np.zeros((2, 1000))
+    poses_pf = np.zeros((2, 1000))
     z_prev = np.zeros((2, 1))
 
     while True:
@@ -118,12 +175,17 @@ def visualize_sim(
         particles = state[:2, :]
         z_k = current_measurement(frame, std_e)
         true_pos = current_ground_truth(frame)
-
         pose_predicted = np.mean(particles,1)
+
+        poses_true[:,k] = np.resize(true_pos, 2)
+        measures[:,k] = np.resize(z_k, 2)
+        poses_pf[:,k] = pose_predicted
+
         pose_predicted = np.resize(pose_predicted, (2, 1))
 
         if not np.array_equal(z_k, no_measurement):
             errors[k] = np.linalg.norm(true_pos - pose_predicted)
+            errors_meas[k] = np.linalg.norm(true_pos - z_k)
 
         if play:
             if not np.array_equal(z_k, no_measurement):
@@ -169,11 +231,15 @@ def visualize_sim(
         k = k + 1
 
     errors = errors[:k]
+    errors_meas = errors_meas[:k]
+    poses_true = poses_true[:,:k]
+    measures = measures[:,:k]
+    poses_pf = poses_pf[:,:k]
 
     cap.release()
     cv2.destroyAllWindows()
 
-    return errors
+    return errors, errors_meas, poses_true, measures, poses_pf
 
 
 

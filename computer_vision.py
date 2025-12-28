@@ -311,7 +311,7 @@ def current_measurement(frame, std):
     Implemented as ground truth with added gaussian noise as error.
     Params:
         frame : the frame
-        std : standard deviation of measurment error
+        std : standard deviation of measurement error
     Return:
         z : NumPy array (2,1), of measurement z_x, z_y for this frame.
             Values of -1 indicate no position (bird out of frame)
