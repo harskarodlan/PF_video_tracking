@@ -11,15 +11,16 @@ errors, errors_meas, poses_true, measures, poses_pf = visualize_sim(
     threshold = 0,
     injection_ratio = 0.005,
     injection_distance = 100,
-    speed = 0.5,
+    speed = 0.1,
     file = 'annoying_bird.mov',
     std_e = 20.,
+    dropout = 0.1,
     play = True
 )
 
-print(poses_true.shape)
-print(measures.shape)
-print(poses_pf.shape)
+print(poses_true)
+print(measures)
+print(poses_pf)
 
 print(errors.shape)
 plot_errors(errors, "Error for Each Frame")

@@ -305,13 +305,14 @@ def current_ground_truth(frame):
     return pos
 
 
-def current_measurement(frame, std):
+def current_measurement(frame, std, dropout):
     """
     Get simulated measurement position z_x,z_y of bird for a given frame.
     Implemented as ground truth with added gaussian noise as error.
     Params:
         frame : the frame
         std : standard deviation of measurement error
+        dropout: float in [0,1], probability that the measurement model fails
     Return:
         z : NumPy array (2,1), of measurement z_x, z_y for this frame.
             Values of -1 indicate no position (bird out of frame)
@@ -324,5 +325,8 @@ def current_measurement(frame, std):
 
     if not np.array_equal(true_pos, no_measurement):
         z = z + np.random.normal(0,std,(2,1))
-    
+
+        if np.random.uniform(0.,1.) <= dropout:
+            z = no_measurement
+
     return z

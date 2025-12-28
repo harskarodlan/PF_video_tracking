@@ -121,6 +121,7 @@ def visualize_sim(
         speed: float = 1.,
         file: str = 'annoying_bird.mov',
         std_e: float = 4.,
+        dropout: float = 0.,
         play:bool = True
 ) -> (np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray):
     """
@@ -138,6 +139,7 @@ def visualize_sim(
         speed : float, playback speed
         file : string, video file name
         std_e : int, measurement error standard deviation
+        dropout: float in [0,1], probability that the measurement model fails
         play : boolean, if True, plays video on screen
     Return:
         errors: NumPy array (T), the prediction error for each frame
@@ -173,7 +175,7 @@ def visualize_sim(
 
 
         particles = state[:2, :]
-        z_k = current_measurement(frame, std_e)
+        z_k = current_measurement(frame, std_e, dropout)
         true_pos = current_ground_truth(frame)
         pose_predicted = np.mean(particles,1)
 
@@ -188,13 +190,18 @@ def visualize_sim(
             errors_meas[k] = np.linalg.norm(true_pos - z_k)
 
         if play:
+            for i in range(M):
+                x, y = np.int16(particles[:, i])
+                # draw particles in red
+                cv2.circle(frame, (x, y), radius=3, color=(0, 0, 255), thickness=-1)
+
             if not np.array_equal(z_k, no_measurement):
                 # draw measurement in green
                 cv2.circle(frame, (int(z_k[0, 0]), int(z_k[1, 0])), radius=8, color=(0, 255, 0), thickness=-1)
                 # draw true position in blue
                 cv2.circle(frame, (int(true_pos[0,0]), int(true_pos[1,0])), radius=8, color=(255, 0, 0), thickness=-1)
-            # draw predicted position in magenta
-            cv2.circle(frame, (int(pose_predicted[0, 0]), int(pose_predicted[1, 0])), radius=8, color=(255, 0, 255), thickness=-1)
+            # draw predicted position in yellow
+            cv2.circle(frame, (int(pose_predicted[0, 0]), int(pose_predicted[1, 0])), radius=8, color=(0, 255, 255), thickness=-1)
 
             font = cv2.FONT_HERSHEY_SIMPLEX
             # Use putText() method for
@@ -208,11 +215,6 @@ def visualize_sim(
                         2, 
                         cv2.LINE_4)
 
-            for i in range(M):
-                x, y = np.int16(particles[:, i])
-                # draw particles in red
-                cv2.circle(frame, (x, y), radius=3, color=(0, 0, 255), thickness=-1)
-
             # show frame in window "Frame"
             cv2.imshow("Frame", frame)
 
@@ -220,6 +222,10 @@ def visualize_sim(
             key = cv2.waitKey(t)
             if key == 27:  # esc = 27
                 break
+            if key == 32:  # space = 32
+                key2 = cv2.waitKey(10000)
+                if key2 == 115: # s = 115
+                    cv2.imwrite("./frames/frame_"+str(k)+".png", frame)
 
         measurement_distance = int(np.linalg.norm(z_prev - z_k))
         z_prev = z_k

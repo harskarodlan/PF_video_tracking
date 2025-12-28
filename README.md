@@ -5,7 +5,7 @@ We use a Particle Filter estimation algorithm to track the head of "The Annoying
 
 ## Files in this Repositories
 
-In this repository you will find the following files:
+In this repository you will find the following files and folders:
 
 - `annoying_bird.mov`: The video we are going to analyze.
 
@@ -17,11 +17,13 @@ In this repository you will find the following files:
 
 - `simulate.py`: The main function that runs the algorithm with the selected parameters.
 
-- `test_cv.py`: tester script used to debug `computer_vision.py`. 
+- `test_cv.py`: tester script used to debug `computer_vision.py`.
 
-- `test_pf.py`: tester script used to debug `particle_filter.py`. 
+- `test_pf.py`: tester script used to debug `particle_filter.py`.
 
-- `test_vis.py`: tester script used to debug `visualizer.py`. 
+- `test_vis.py`: tester script used to debug `visualizer.py`.
+
+- `frames/`: folder where frames can be saved.
 
 ## How to run the Code
 
@@ -31,6 +33,8 @@ Then, run the same file with
 ``
 python3 ./simulate.py
 ``
+
+Pressing spacebar the video will stops for 10 seconds. In this situations, you can press `s` key to take a screenshot, that will be saved in `frames/`.
 
 ## Maintainers
 
