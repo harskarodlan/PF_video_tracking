@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from numpy.ma.extras import apply_along_axis
 
 from particle_filter import next_frame, random_particles
-from computer_vision import get_measurements, current_measurement, current_measurement_robust, current_ground_truth
+from computer_vision import get_measurements, current_measurement_rand_jump, current_measurement_robust, current_ground_truth
 
 
 
@@ -175,7 +175,7 @@ def visualize_sim(
 
 
         particles = state[:2, :]
-        z_k = current_measurement(frame, std_e, dropout)
+        z_k = current_measurement_rand_jump(frame, std_e, dropout)
         true_pos = current_ground_truth(frame)
         pose_predicted = np.mean(particles,1)
 

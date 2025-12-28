@@ -4,16 +4,16 @@ from visualizer import visualize_sim, plot_errors, plot_errors_interval, clean_e
 
 
 errors, errors_meas, poses_true, measures, poses_pf = visualize_sim(
-    M = 1000,
+    M = 5000,
     std_p = 5.,
     std_v = 10.,
-    std_q = 20.,
+    std_q = 50.,
     threshold = 0,
     injection_ratio = 0.005,
     injection_distance = 100,
-    speed = 0.1,
+    speed = 2,
     file = 'annoying_bird.mov',
-    std_e = 20.,
+    std_e = 20,
     dropout = 0.1,
     play = True
 )
@@ -35,7 +35,7 @@ plot_errors(errors_2, "Error After Pruning 2")
 errors_3 = clean_errors(errors, 10)
 plot_errors(errors_3, "Error After Pruning 3")
 
-plot_errors_interval(errors, "Error for Initial Frames", 1, 201)
-plot_errors_interval(errors_meas, "Measurement Error for Initial Frames", 1, 201)
+plot_errors_interval(errors, "Error for Initial Frames", 5, 200)
+plot_errors_interval(errors_meas, "Measurement Error for Initial Frames", 5, 200)
 
 plt.show()

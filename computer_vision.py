@@ -330,3 +330,31 @@ def current_measurement(frame, std, dropout):
             z = no_measurement
 
     return z
+
+
+def current_measurement_rand_jump(frame, std, p):
+    """
+    Get simulated measurement position z_x,z_y of bird for a given frame.
+    Implemented as ground truth with added gaussian noise as error.
+    Params:
+        frame : the frame
+        std : standard deviation of measurement error
+        dropout: float in [0,1], probability that the measurement model fails
+    Return:
+        z : NumPy array (2,1), of measurement z_x, z_y for this frame.
+            Values of -1 indicate no position (bird out of frame)
+    """
+    true_pos = current_ground_truth(frame)
+
+    no_measurement = -1 * np.ones((2, 1))
+
+    z = true_pos
+
+    if not np.array_equal(true_pos, no_measurement):
+        z = z + np.random.normal(0,std,(2,1))
+        print(z.shape)
+        if np.random.uniform(0.,1.) <= p:
+            z = np.random.randint([0, 0], [720, 1280]).reshape((2,1))
+            print(z.shape)
+
+    return z
