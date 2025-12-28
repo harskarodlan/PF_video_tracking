@@ -352,9 +352,7 @@ def current_measurement_rand_jump(frame, std, p):
 
     if not np.array_equal(true_pos, no_measurement):
         z = z + np.random.normal(0,std,(2,1))
-        print(z.shape)
         if np.random.uniform(0.,1.) <= p:
             z = np.random.randint([0, 0], [720, 1280]).reshape((2,1))
-            print(z.shape)
 
     return z
