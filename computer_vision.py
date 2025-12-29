@@ -118,7 +118,8 @@ def current_ground_truth(frame):
 def current_measurement_rand_jump(frame, std, p):
     """
     Get simulated measurement position z_x,z_y of bird for a given frame.
-    Implemented as ground truth with added gaussian noise as error.
+    Implemented as ground truth with added gaussian noise as error. The model
+    can also return an outlier measurement with probability p.
     Params:
         frame : the frame
         std : standard deviation of measurement error

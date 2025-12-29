@@ -117,7 +117,9 @@ def visualize_sim(
         speed: float = 1.,
         file: str = 'annoying_bird.mov',
         std_e: float = 4.,
-        dropout: float = 0.,
+        p_outlier: float = 0.,
+        detection_type: str = 'disabled',
+        save_frames: (int, int) = None,
         play:bool = True
 ) -> (np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray):
     """
@@ -135,7 +137,10 @@ def visualize_sim(
         speed : float, playback speed
         file : string, video file name
         std_e : int, measurement error standard deviation
-        dropout: float in [0,1], probability that the measurement model fails
+        p_outlier: float in [0,1], probability that the measurement model returns an outlier
+        detection_type: string: 'neff' = Neff outlier detection, 'threshold' = threshold
+        outlier detection, 'disabled' = outlier detection disabled
+        save_frames: tuple(int, int), the start and ending frame to save, extremes included
         play : boolean, if True, plays video on screen
     Return:
         errors: NumPy array (T), the prediction error for each frame
@@ -144,6 +149,9 @@ def visualize_sim(
         measures: NumPy array (2,T), the measures for each frame
         poses_pf: NumPy array (2,T), the predicted poses for each frame
     """
+    if save_frames is None:
+        save_frames = (0, -1) # No frame to save
+
     no_measurement = -1 * np.ones((2, 1))
     cap = cv2.VideoCapture(file)
 
@@ -154,6 +162,7 @@ def visualize_sim(
 
     state = random_particles(M, std_v)
 
+    # Variable Initialization
     k = 0
     errors = np.zeros(1000)
     errors_meas = np.zeros(1000)
@@ -171,10 +180,11 @@ def visualize_sim(
 
 
         particles = state[:2, :]
-        z_k = current_measurement_rand_jump(frame, std_e, dropout)
+        z_k = current_measurement_rand_jump(frame, std_e, p_outlier)
         true_pos = current_ground_truth(frame)
         pose_predicted = np.mean(particles,1)
 
+        # Save current iteration values
         poses_true[:,k] = np.resize(true_pos, 2)
         measures[:,k] = np.resize(z_k, 2)
         poses_pf[:,k] = pose_predicted
@@ -216,27 +226,33 @@ def visualize_sim(
 
             # wait t ms or until esc is pressed
             key = cv2.waitKey(t)
+
+            # Esc terminates the video
             if key == 27:  # esc = 27
                 break
+
+            # Space freezes the video for 10 seconds
             if key == 32:  # space = 32
                 key2 = cv2.waitKey(10000)
                 if key2 == 115: # s = 115
                     cv2.imwrite("./frames/frame_"+str(k)+".png", frame)
 
-            # ATTENTION: uncomment the following line will save every single frame
-            #cv2.imwrite("./movie/frame_" + str(k) + ".png", frame)
+            # Save the specified frames
+            if save_frames[0] <= k <= save_frames[1]:
+                cv2.imwrite("./frames/frame_" + str(k) + ".png", frame)
 
         measurement_distance = int(np.linalg.norm(z_prev - z_k))
         z_prev = z_k
 
-        outlier_det = not np.array_equal(z_prev,no_measurement)
-
-        if measurement_distance >= injection_distance:
-            state = next_frame(state, M, z_k, std_p, std_v, std_q, threshold, injection_ratio, True, outlier_det)
+        if np.array_equal(z_prev, no_measurement):
+            state = next_frame(state, M, z_k, std_p, std_v, std_q, threshold, injection_ratio, True, 'disabled')
+        elif measurement_distance >= injection_distance:
+            state = next_frame(state, M, z_k, std_p, std_v, std_q, threshold, injection_ratio, True, detection_type)
         else:
-            state = next_frame(state, M, z_k, std_p, std_v, std_q, threshold, injection_ratio, False, outlier_det)
+            state = next_frame(state, M, z_k, std_p, std_v, std_q, threshold, injection_ratio, False, detection_type)
         k = k + 1
 
+    # Variables were pre-allocated to save time, now we resize them
     errors = errors[:k]
     errors_meas = errors_meas[:k]
     poses_true = poses_true[:,:k]
@@ -330,7 +346,7 @@ def visualize_sim_z_given(
             break
 
         z_k = np.resize(z[:, k], (2, 1))  # numpy returns a (2) we need a (2,1)
-        state = next_frame(state, M, z_k, std_p, std_v, std_q, threshold, injection_ratio, False, False)
+        state = next_frame(state, M, z_k, std_p, std_v, std_q, threshold, injection_ratio, False, 'disabled')
         k = k+1
 
     cap.release()

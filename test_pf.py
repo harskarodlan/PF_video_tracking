@@ -1,5 +1,3 @@
-from math import trunc
-
 import numpy as np
 from particle_filter import wrap_state, random_particles, predict, weight_particles
 from particle_filter import systematic_resample, systematic_resample_new_size, multinomial_resample, injection_resample
@@ -39,7 +37,7 @@ for i in range(10):
 print(state_bar)
 z = np.array([[1.],[2.]])
 print(z)
-weights = weight_particles(state_bar,z, 5., 0.002, True)
+weights = weight_particles(state_bar,z, 5., 0.002, 'disabled')
 print(weights)
 print("--- --- ---\n")
 

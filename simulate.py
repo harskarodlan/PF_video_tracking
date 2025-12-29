@@ -8,14 +8,16 @@ errors, errors_meas, poses_true, measures, poses_pf = visualize_sim(
     std_p = 5.,
     std_v = 10.,
     std_q = 20.,
-    # threshold = 1e-3, # for threshold detection
-    threshold = 0.65, # for Neff detection
+    threshold = 1e-3, # for threshold detection
+    # threshold = 0.65, # for Neff detection
     injection_ratio = 0.005,
     injection_distance = 100,
-    speed = 2,
+    speed = 2.,
     file = 'annoying_bird.mov',
-    std_e = 20,
-    dropout = 0.1,
+    std_e = 20.,
+    p_outlier = 0.1,
+    detection_type = 'threshold',
+    save_frames = None, # (0,200),
     play = True
 )
 

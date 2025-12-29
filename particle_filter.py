@@ -87,7 +87,7 @@ def weight_particles(
         z:np.ndarray,
         std_q:float,
         threshold:float,
-        outlier_det:bool
+        detection_type:str = 'disabled'
 ) -> np.ndarray:
     """
     Computes the weights of the particles.
@@ -96,7 +96,8 @@ def weight_particles(
         z : NumPy array (2,1), the measurement for this frame
         std_q: float, standard deviation for the measurement model
         threshold: float, the threshold to detect outlier measurements
-        outlier_det: boolean: if true, outlier detection is performed
+        detection_type: string: 'neff' = Neff outlier detection, 'threshold' = threshold
+        outlier detection, 'disabled' = outlier detection disabled
     Return:
         weights : NumPy array (M), the weights of the particles
     """
@@ -112,7 +113,7 @@ def weight_particles(
     log_psi -= np.max(log_psi)
     psi = np.exp(log_psi)
 
-    if False:#outlier_det:
+    if detection_type == 'threshold':
         # Outlier Detection: Mean Psi Method
         mean_psi = np.mean(psi)
         if mean_psi <= threshold:
@@ -121,7 +122,7 @@ def weight_particles(
 
     weights = psi / np.sum(psi)
 
-    if outlier_det:
+    if detection_type == 'neff':
         # Outlier Detection: Neff Method
         Neff = 1.0 / np.sum(weights ** 2)
         if Neff > threshold * M:
@@ -236,7 +237,7 @@ def next_frame(
         threshold:float = 0.,
         injection_ratio:float = 0.,
         force_injection: bool = False,
-        outlier_det : bool = False
+        detection_type: str = 'disabled'
 ):
     """
     Uses motion model, weighting and resampling to predict the bird's position for the next frame.
@@ -251,7 +252,8 @@ def next_frame(
         injection_ratio : float in [0,1], the fraction of particles to generate when the filter is in
         recover mode
         force_injection: boolean, if True extra particles are injected also in case of valid measurement
-        outlier_det: boolean: if true, outlier detection is performed
+        detection_type: string: 'neff' = Neff outlier detection, 'threshold' = threshold
+        outlier detection, 'disabled' = outlier detection disabled
     Return:
         state_next : NumPy array (4,M), the particles predicted for next frame
     """
@@ -265,7 +267,7 @@ def next_frame(
         state_next = injection_resample(state_bar, weights, injection_ratio, std_v)
     # We have a measurement, the filter is in normal mode and all particles are resampled
     else:
-        weights = weight_particles(state_bar, z_t, std_q, threshold, outlier_det)
+        weights = weight_particles(state_bar, z_t, std_q, threshold, detection_type)
         if force_injection:
             state_next = injection_resample(state_bar, weights, injection_ratio, std_v)
         else:
@@ -400,7 +402,6 @@ def particle_filter(
         threshold: float, the threshold to detect outlier measurements
         injection_ratio : float in [0,1], the fraction of particles to generate when the filter is in
         recover mode
-        speed : float, playback speed
     Return:
         simulation : NumPy array (4,M,T), the particles, organized by frames
     """
@@ -411,7 +412,7 @@ def particle_filter(
 
     for t in range(T):
         z_t = np.resize(z[:, t], (2, 1))  # numpy returns a (2) we need a (2,1)
-        state = next_frame(state, M, z_t, std_p, std_v, std_q, threshold, injection_ratio, False, False)
+        state = next_frame(state, M, z_t, std_p, std_v, std_q, threshold, injection_ratio, False, 'disabled')
         simulation[:,:,t] = state
 
     return simulation
