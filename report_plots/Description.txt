@@ -1,0 +1,22 @@
+Files the subfolders:
+
+- All the histogram plots
+
+- The parameters used to run the simulation
+
+- The console output for the run
+
+- The frames 0 and 1
+
+- The tree subfolder: contains frames 695-710, when the bird basses behind the tree
+
+- The outlier subfolder: 
+	- Neff: some frames whith multiple outlier, all undetected
+	- Threshold: multiple outlier, first detected second not (it is very close to be correct)
+	- No Detection: outlier, of course neglected, the pf takes many frames to converge back
+
+- The teleport subfolder: contains frames 580-595, when the bird teleports from right to left with no
+invalid measurement in between. Please note that threshold diverges, the other two recover. I added also
+frame 609 to show that even after a few other frame threshold is not recovered yet, while the other two
+are almost perfect.
+

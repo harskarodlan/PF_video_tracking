@@ -1,0 +1,109 @@
+Outlier incoming
+Outlier incoming
+Outlier incoming
+outlier
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+outlier
+Outlier incoming
+Outlier incoming
+outlier
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+outlier
+Outlier incoming
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+Outlier incoming
+Outlier incoming
+outlier
+Outlier incoming
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+outlier
+Outlier incoming
+Outlier incoming
+outlier
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+outlier
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+outlier
+Outlier incoming
+Outlier incoming
+Outlier incoming
+outlier
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+outlier
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+Outlier incoming
+Outlier incoming
+outlier
+Outlier incoming
+Outlier incoming
+outlier
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+[[1156. 1156. 1156. ...  568.  568.  568.]
+ [ 295.  295.  295. ...  102.  102.  102.]]
+[[1153.41740409 1163.05884914 1141.8979476  ... 1185.
+   400.          557.38578255]
+ [ 317.5133941   285.81163154  300.26114266 ...  200.
+   306.          109.63141238]]
+[[ 643.71367476 1150.48905844 1161.506732   ...  606.98590891
+   719.77208771  515.28200397]
+ [ 360.0412913   318.78838968  294.60187399 ...  219.95687771
+   184.9415739   295.55863613]]
+(817,)
+(817,)
+
+Process finished with exit code 0
