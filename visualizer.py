@@ -8,7 +8,15 @@ import matplotlib.pyplot as plt
 from numpy.ma.extras import apply_along_axis
 
 from particle_filter import next_frame, random_particles
-from computer_vision import get_measurements, current_measurement_rand_jump, current_measurement_robust, current_ground_truth
+from computer_vision import current_measurement_rand_jump, current_ground_truth
+
+
+
+
+
+#
+# PLOTTING FUNCTIONS
+#
 
 
 
@@ -90,23 +98,11 @@ def clean_errors(errors: np.ndarray, stride: int) -> np.ndarray:
 
 
 
-def compute_errors(predicted:np.ndarray, ground:np.ndarray) -> np.ndarray:
-    """
-    Computes the error between two pose sequences, as the Euclidean distance between the pixel positions.
-    Params:
-        predicted : NumPy array (2, T), the predicted pose
-        ground : NumPy array (2, T), the ground truth
-    Return:
-        errors: NumPy array (T), the error
-    """
-    diff = predicted - ground
-    diff = np.square(diff)
-    diff = np.sum(diff, 0)
-    diff = np.sqrt(diff)
-
-    return diff
 
 
+#
+# SIMULATION FUNCTION
+#
 
 
 
@@ -227,13 +223,18 @@ def visualize_sim(
                 if key2 == 115: # s = 115
                     cv2.imwrite("./frames/frame_"+str(k)+".png", frame)
 
+            # ATTENTION: uncomment the following line will save every single frame
+            #cv2.imwrite("./movie/frame_" + str(k) + ".png", frame)
+
         measurement_distance = int(np.linalg.norm(z_prev - z_k))
         z_prev = z_k
 
+        outlier_det = not np.array_equal(z_prev,no_measurement)
+
         if measurement_distance >= injection_distance:
-            state = next_frame(state, M, z_k, std_p, std_v, std_q, threshold, injection_ratio, True)
+            state = next_frame(state, M, z_k, std_p, std_v, std_q, threshold, injection_ratio, True, outlier_det)
         else:
-            state = next_frame(state, M, z_k, std_p, std_v, std_q, threshold, injection_ratio, False)
+            state = next_frame(state, M, z_k, std_p, std_v, std_q, threshold, injection_ratio, False, outlier_det)
         k = k + 1
 
     errors = errors[:k]
@@ -246,6 +247,24 @@ def visualize_sim(
     cv2.destroyAllWindows()
 
     return errors, errors_meas, poses_true, measures, poses_pf
+
+
+
+
+
+
+
+
+
+
+#
+# PREVIOUS VERSIONS
+#
+# The following functions have been used during the project development
+# but have been discarded or replaced by modified versions for the final delivery.
+# This means we report them here for completeness, but they are not invoked by
+# the final simulation.
+#
 
 
 
@@ -311,8 +330,28 @@ def visualize_sim_z_given(
             break
 
         z_k = np.resize(z[:, k], (2, 1))  # numpy returns a (2) we need a (2,1)
-        state = next_frame(state, M, z_k, std_p, std_v, std_q, threshold, injection_ratio, False)
+        state = next_frame(state, M, z_k, std_p, std_v, std_q, threshold, injection_ratio, False, False)
         k = k+1
 
     cap.release()
     cv2.destroyAllWindows()
+
+    return
+
+
+
+def compute_errors(predicted:np.ndarray, ground:np.ndarray) -> np.ndarray:
+    """
+    Computes the error between two pose sequences, as the Euclidean distance between the pixel positions.
+    Params:
+        predicted : NumPy array (2, T), the predicted pose
+        ground : NumPy array (2, T), the ground truth
+    Return:
+        errors: NumPy array (T), the error
+    """
+    diff = predicted - ground
+    diff = np.square(diff)
+    diff = np.sum(diff, 0)
+    diff = np.sqrt(diff)
+
+    return diff

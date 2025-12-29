@@ -8,7 +8,8 @@ errors, errors_meas, poses_true, measures, poses_pf = visualize_sim(
     std_p = 5.,
     std_v = 10.,
     std_q = 20.,
-    threshold = 0.65,
+    # threshold = 1e-3, # for threshold detection
+    threshold = 0.65, # for Neff detection
     injection_ratio = 0.005,
     injection_distance = 100,
     speed = 2,
@@ -17,6 +18,8 @@ errors, errors_meas, poses_true, measures, poses_pf = visualize_sim(
     dropout = 0.1,
     play = True
 )
+
+
 
 print(poses_true)
 print(measures)
