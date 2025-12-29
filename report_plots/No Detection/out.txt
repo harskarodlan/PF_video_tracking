@@ -1,0 +1,92 @@
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+Outlier incoming
+[[1156. 1156. 1156. ...  568.  568.  568.]
+ [ 295.  295.  295. ...  102.  102.  102.]]
+[[1130.80306775 1165.52591213 1157.75165539 ...  436.
+   547.87788012  576.82339868]
+ [ 318.10329106  284.39912124  278.02306568 ...  434.
+   126.26446803   92.73293326]]
+[[ 635.46930066 1123.85551028 1145.72283647 ...  737.70687692
+   687.68557296  667.80223691]
+ [ 364.99174438  315.03208478  295.93609338 ...  164.65417051
+   236.92007165  222.12106412]]
+(817,)
+(817,)
+
+Process finished with exit code 0

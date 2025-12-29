@@ -1,0 +1,289 @@
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+outlier
+outlier
+outlier
+outlier
+Outlier incoming
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+outlier
+outlier
+outlier
+Outlier incoming
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+Outlier incoming
+outlier
+outlier
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+Outlier incoming
+outlier
+outlier
+outlier
+Outlier incoming
+outlier
+outlier
+outlier
+outlier
+outlier
+Outlier incoming
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+Outlier incoming
+outlier
+outlier
+outlier
+outlier
+Outlier incoming
+outlier
+outlier
+outlier
+outlier
+Outlier incoming
+outlier
+outlier
+outlier
+outlier
+Outlier incoming
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+Outlier incoming
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+Outlier incoming
+outlier
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+Outlier incoming
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+Outlier incoming
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+Outlier incoming
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+outlier
+[[1156. 1156. 1156. ...  568.  568.  568.]
+ [ 295.  295.  295. ...  102.  102.  102.]]
+[[1146.74945135 1135.9562901  1012.         ...  545.99949589
+   587.45677396  584.26491001]
+ [ 254.55257803  275.03725296  304.         ...   96.73870563
+   100.32707934  104.23962735]]
+[[ 631.02033448 1144.4097284  1141.7543614  ... 1160.2140518
+  1155.70891004 1150.97914347]
+ [ 364.05781752  250.11580437  263.86905503 ...  410.62862702
+   411.66296491  412.49744925]]
+(817,)
+(817,)
+
+Process finished with exit code 0
