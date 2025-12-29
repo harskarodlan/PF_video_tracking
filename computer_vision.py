@@ -332,6 +332,7 @@ def current_measurement(frame, std, dropout):
     return z
 
 
+
 def current_measurement_rand_jump(frame, std, p):
     """
     Get simulated measurement position z_x,z_y of bird for a given frame.
@@ -344,15 +345,24 @@ def current_measurement_rand_jump(frame, std, p):
         z : NumPy array (2,1), of measurement z_x, z_y for this frame.
             Values of -1 indicate no position (bird out of frame)
     """
+    r = 2000
+
     true_pos = current_ground_truth(frame)
 
     no_measurement = -1 * np.ones((2, 1))
 
     z = true_pos
+    x = z[0,0]
+    y = z[1,0]
 
     if not np.array_equal(true_pos, no_measurement):
         z = z + np.random.normal(0,std,(2,1))
         if np.random.uniform(0.,1.) <= p:
-            z = np.random.randint([0, 0], [720, 1280]).reshape((2,1))
+            x0 = max(0, x-r)
+            x1 = min(1280, x+r)
+            y0 = max(0, y-r)
+            y1 = min(720, y+r)
+            z = np.random.randint([x0, y0], [x1, y1]).reshape((2,1))
 
     return z
+    
