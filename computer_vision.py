@@ -363,6 +363,7 @@ def current_measurement_rand_jump(frame, std, p):
             y0 = max(0, y-r)
             y1 = min(720, y+r)
             z = np.random.randint([x0, y0], [x1, y1]).reshape((2,1))
+            print("Outlier incoming")
 
     return z
     

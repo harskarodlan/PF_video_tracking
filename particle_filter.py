@@ -119,19 +119,43 @@ def weight_particles(state_bar:np.ndarray, z:np.ndarray, std_q:float, threshold:
     """
     M = state_bar.shape[1]  # number of particles
 
-    z_extended = np.tile(z, (1,M))
-    eta = state_bar[0:2,:] - z_extended # innovation
+    # z_extended = np.tile(z, (1,M))
+    # eta = state_bar[0:2,:] - z_extended # innovation
 
-    psi = -0.5 * np.square(eta) / (std_q ** 2)
-    psi = np.exp( np.sum(psi,0) )
-    psi = psi / (2 * np.pi * (std_q ** 2)) # gaussian normalization
+    # psi = -0.5 * np.square(eta) / (std_q ** 2)
+    # psi = np.exp( np.sum(psi,0) )
+    # psi = psi / (2 * np.pi * (std_q ** 2)) # gaussian normalization
 
     # Outlier Detection
-    mean_psi = np.mean(psi)
-    if mean_psi <= threshold:
-        psi = np.ones(M)
+    # mean_psi = np.mean(psi)
+    # if mean_psi <= threshold:
+    #     psi = np.ones(M)
 
-    weights = psi / np.sum(psi) # normalized weights
+    #weights = psi / np.sum(psi) # normalized weights
+
+    z_extended = np.tile(z, (1, M))
+    eta = state_bar[0:2, :] - z_extended  # 2 x M
+
+    # log-likelihood up to an additive constant
+    log_psi = -0.5 * np.sum((eta / std_q)**2, axis=0)  # (M,)
+
+    # stabilize exp (log-sum-exp trick)
+    log_psi -= np.max(log_psi)
+    psi = np.exp(log_psi)
+    
+
+    #Outlier Detection
+    # mean_psi = np.mean(psi)
+    # if mean_psi <= threshold:
+    #     print("outlier")
+    #     psi = np.ones(M)
+
+    weights = psi / np.sum(psi)
+
+    Neff = 1.0 / np.sum(weights**2)
+    if Neff > threshold * M:
+        print("outlier")
+        weights = np.ones(M) / M
 
     return weights
 
